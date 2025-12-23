@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المقهى MK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8B4513;
+            --primary-dark: #5D2906;
+            --secondary: #D4AF37;
+            --secondary-dark: #B8860B;
+            --light: #F5E6D0;
+            --dark: #2C1810;
+            --success: #2E8B57;
+            --danger: #DC143C;
+            --warning: #FFA500;
+            --info: #1E90FF;
+            --gray: #8B8B8B;
+            --light-gray: #F5F5F5;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --radius: 15px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary-dark) 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            direction: rtl;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* شاشة تسجيل الدخول */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(rgba(44, 24, 16, 0.85), rgba(44, 24, 16, 0.9)), url('https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .mk-logo {
+            font-size: 120px;
+            font-weight: 900;
+            color: var(--secondary);
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.7);
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .mk-logo:after {
+            content: "COFFEE & ARCADE";
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            font-size: 18px;
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: var(--light);
+        }
+        
+        .login-form {
+            background: rgba(245, 230, 208, 0.9);
+            border-radius: var(--radius);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-dark);
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: var(--transition);
+            background: white;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--dark));
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(139, 69, 19, 0.4);
+        }
+        
+        /* الشاشة الرئيسية */
+        .main-screen {
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--dark), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header-logo {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--secondary);
+            letter-spacing: 3px;
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn-icon {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 20px;
+        }
+        
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        /* قسم إدارة المقهى */
+        .cafe-section {
+            display: none;
+        }
+        
+        .section-title {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .section-title i {
+            color: var(--secondary);
+        }
+        
+        .back-btn {
+            background: var(--light);
+            color: var(--dark);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Tajawal', sans-serif;
+            margin-right: auto;
+        }
+        
+        .back-btn:hover {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+        
+        /* قسم إدارة المقهى */
+        .tables-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .table-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .table-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .table-card.occupied {
+            border: 3px solid var(--primary);
+        }
+        
+        .table-card.vacant {
+            border: 3px solid var(--success);
+        }
+        
+        .table-card.selected {
+            border: 3px solid var(--secondary);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .table-id {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        
+        .table-status {
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: rgba(46, 139, 87, 0.2);
+            color: var(--success);
+        }
+        
+        .status-inactive {
+            background: rgba(220, 20, 60, 0.2);
+            color: var(--danger);
+        }
+        
+        .table-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 60px;
+        }
+        
+        .table-orders {
+            flex-grow: 1;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            overflow-y: auto;
+            max-height: 150px;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+        
+        .order-name {
+            font-weight: 500;
+        }
+        
+        .order-price {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .table-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+        
+        .table-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-table {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .btn-add-order {
+            background: linear-gradient(to right, var(--info), #2980b9);
+            color: white;
+        }
+        
+        .btn-add-order:hover {
+            background: linear-gradient(to right, #2980b9, #1f618d);
+        }
+        
+        .btn-clear-table {
+            background: linear-gradient(to right, var(--warning), #e67e22);
+            color: white;
+        }
+        
+        .btn-clear-table:hover {
+            background: linear-gradient(to right, #e67e22, #d35400);
+        }
+        
+        .menu-sidebar {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            max-height: 800px;
+            overflow-y: auto;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .menu-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .category-btn {
+            padding: 10px 20px;
+            background: rgba(139, 69, 19, 0.1);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .category-btn:hover:not(.active) {
+            background: rgba(139, 69, 19, 0.2);
+        }
+        
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .menu-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        
+        .item-price {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .cafe-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        /* قسم الإعدادات */
+        .settings-section {
+            display: none;
+        }
+        
+        .settings-container {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .settings-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(139, 69, 19, 0.2);
+            padding-bottom: 15px;
+        }
+        
+        .settings-tab {
+            padding: 12px 25px;
+            background: rgba(139, 69, 19, 0.1);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .settings-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .settings-tab:hover:not(.active) {
+            background: rgba(139, 69, 19, 0.2);
+        }
+        
+        .settings-content {
+            display: none;
+        }
+        
+        .settings-content.active {
+            display: block;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .color-picker {
+            width: 100%;
+            height: 50px;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+        }
+        
+        .settings-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(139, 69, 19, 0.2);
+        }
+        
+        /* نافذة تأكيد */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .modal-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+        
+        .modal-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(to right, var(--success), #27ae60);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(to right, var(--gray), #7f8c8d);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .btn-confirm:hover, .btn-cancel:hover {
+            transform: translateY(-3px);
+        }
+        
+        /* الطباعة */
+        .print-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--primary);
+            display: none;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .print-section, .print-section * {
+                visibility: visible;
+            }
+            
+            .print-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+                font-size: 14px;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        /* التكيف مع الشاشات الصغيرة */
+        @media (max-width: 992px) {
+            .cafe-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-sidebar {
+                max-height: 400px;
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mk-logo {
+                font-size: 80px;
+            }
+            
+            .mk-logo:after {
+                font-size: 14px;
+                letter-spacing: 5px;
+            }
+            
+            .login-form {
+                padding: 30px 20px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .tables-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+            
+            .back-btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+        
+        /* إشعارات */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.error {
+            background: var(--danger);
+        }
+        
+        .notification.warning {
+            background: var(--warning);
+        }
+        
+        .notification.info {
+            background: var(--info);
+        }
+        
+        /* رز التحكم الرئيسي */
+        .main-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 15px 30px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-btn:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--dark));
+            transform: translateY(-3px);
+        }
+        
+        .cafe-summary {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+        }
+        
+        .summary-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(139, 69, 19, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 16px;
+            color: var(--dark);
+            margin-top: 10px;
+        }
+        
+        /* مؤشر الطاولة المحددة */
+        .selected-table-indicator {
+            background: var(--secondary);
+            color: var(--dark);
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+        
+        .selected-table-indicator.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة تسجيل الدخول -->
+    <div class="login-screen" id="loginScreen">
+        <div class="logo-container">
+            <div class="mk-logo">MK</div>
+        </div>
+        
+        <div class="login-form">
+            <h2>تسجيل الدخول إلى النظام</h2>
+            <div class="form-group">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" id="password" placeholder="أدخل كلمة المرور">
+            </div>
+            <button class="btn btn-primary" id="loginBtn">دخول إلى النظام</button>
+            <div style="text-align: center; margin-top: 20px; color: var(--primary-dark); font-weight: 500;">
+                كلمة المرور الافتراضية: karam9
+            </div>
+        </div>
+    </div>
+    
+    <!-- الشاشة الرئيسية -->
+    <div class="main-screen container" id="mainScreen">
+        <!-- رأس الصفحة -->
+        <div class="header">
+            <div class="header-logo">MK</div>
+            <div class="header-controls">
+                <button class="btn-icon" id="printBtn" title="طباعة">
+                    <i class="fas fa-print"></i>
+                </button>
+                <button class="btn-icon" id="settingsBtn" title="الإعدادات">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn-icon" id="logoutBtn" title="تسجيل الخروج">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- قسم إدارة المقهى -->
+        <div class="cafe-section" id="cafeSection">
+            <div class="section-title">
+                <i class="fas fa-coffee"></i>
+                <span>إدارة المقهى</span>
+            </div>
+            
+            <div class="main-controls">
+                <button class="control-btn" id="addTableBtn">
+                    <i class="fas fa-plus"></i> إضافة طاولة جديدة
+                </button>
+                <button class="control-btn" id="quickStatsBtn">
+                    <i class="fas fa-chart-bar"></i> الإحصائيات السريعة
+                </button>
+                <button class="control-btn" id="cancelSelectionBtn" style="display: none; background: linear-gradient(to right, var(--gray), #7f8c8d);">
+                    <i class="fas fa-times"></i> إلغاء تحديد الطاولة
+                </button>
+            </div>
+            
+            <!-- مؤشر الطاولة المحددة -->
+            <div class="selected-table-indicator" id="selectedTableIndicator">
+                <i class="fas fa-mouse-pointer"></i> 
+                <span id="selectedTableName">طاولة 1</span> 
+                <span>محددة - اختر صنفًا من القائمة على اليمين لإضافته</span>
+            </div>
+            
+            <div class="cafe-layout">
+                <div>
+                    <div class="tables-container" id="tablesContainer">
+                        <!-- سيتم إنشاء الطاولات هنا بواسطة JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="menu-sidebar">
+                    <div class="menu-categories" id="menuCategories">
+                        <!-- سيتم إنشاء أقسام القائمة هنا بواسطة JavaScript -->
+                    </div>
+                    
+                    <div class="menu-items" id="menuItems">
+                        <!-- سيتم إنشاء عناصر القائمة هنا بواسطة JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cafe-summary">
+                <div class="summary-title">ملخص المقهى</div>
+                <div class="summary-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="occupiedTables">0</div>
+                        <div class="stat-label">طاولات مشغولة</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="vacantTables">0</div>
+                        <div class="stat-label">طاولات فارغة</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalEarnings">0</div>
+                        <div class="stat-label">إجمالي الإيرادات (دينار)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalOrders">0</div>
+                        <div class="stat-label">إجمالي الطلبات</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- قسم الإعدادات -->
+        <div class="settings-section" id="settingsSection">
+            <div class="section-title">
+                <i class="fas fa-cog"></i>
+                <span>إعدادات النظام</span>
+                <button class="back-btn" id="backFromSettings">
+                    <i class="fas fa-arrow-right"></i> العودة لإدارة المقهى
+                </button>
+            </div>
+            
+            <div class="settings-container">
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-tab="appearance">المظهر والألوان</button>
+                    <button class="settings-tab" data-tab="menu">القائمة والأسعار</button>
+                    <button class="settings-tab" data-tab="tables">الطاولات</button>
+                    <button class="settings-tab" data-tab="images">الصور والخلفيات</button>
+                </div>
+                
+                <div class="settings-content active" id="appearanceTab">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-dark);">تخصيص مظهر النظام</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>اللون الأساسي</label>
+                            <input type="color" class="color-picker" id="primaryColor" value="#8B4513">
+                        </div>
+                        <div class="form-group">
+                            <label>اللون الثانوي</label>
+                            <input type="color" class="color-picker" id="secondaryColor" value="#D4AF37">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>لون الخلفية</label>
+                            <input type="color" class="color-picker" id="backgroundColor" value="#2C1810">
+                        </div>
+                        <div class="form-group">
+                            <label>لون النص</label>
+                            <input type="color" class="color-picker" id="textColor" value="#2C1810">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>شعار النظام</label>
+                        <input type="text" id="logoText" value="MK" class="form-control" style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); font-family: 'Tajawal', sans-serif;">
+                    </div>
+                </div>
+                
+                <div class="settings-content" id="menuTab">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-dark);">إدارة قائمة الطعام</h3>
+                    <div style="margin-bottom: 25px;">
+                        <button class="btn btn-primary" id="addCategoryBtn" style="width: auto; display: inline-block; margin-bottom: 15px;">
+                            <i class="fas fa-plus"></i> إضافة قسم جديد
+                        </button>
+                        <button class="btn btn-primary" id="addItemBtn" style="width: auto; display: inline-block; margin-bottom: 15px; margin-right: 10px;">
+                            <i class="fas fa-plus"></i> إضافة صنف جديد
+                        </button>
+                        <button class="btn btn-primary" id="editItemBtn" style="width: auto; display: inline-block; margin-bottom: 15px; margin-right: 10px;">
+                            <i class="fas fa-edit"></i> تعديل صنف
+                        </button>
+                        <button class="btn btn-primary" id="deleteItemBtn" style="width: auto; display: inline-block; margin-bottom: 15px; margin-right: 10px;">
+                            <i class="fas fa-trash"></i> حذف صنف
+                        </button>
+                    </div>
+                    <div id="menuEditor">
+                        <div class="form-group">
+                            <label>تحديد القسم:</label>
+                            <select id="categorySelect" class="form-control" style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); font-family: 'Tajawal', sans-serif;">
+                                <!-- سيتم تعبئة الخيارات بواسطة JavaScript -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>اسم الصنف:</label>
+                            <input type="text" id="itemName" class="form-control" style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); font-family: 'Tajawal', sans-serif;" placeholder="أدخل اسم الصنف">
+                        </div>
+                        <div class="form-group">
+                            <label>سعر الصنف (دينار):</label>
+                            <input type="number" id="itemPrice" class="form-control" style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); font-family: 'Tajawal', sans-serif;" placeholder="أدخل السعر">
+                        </div>
+                        <button class="btn btn-primary" id="saveItemBtn">حفظ الصنف</button>
+                    </div>
+                </div>
+                
+                <div class="settings-content" id="tablesTab">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-dark);">إدارة الطاولات</h3>
+                    <div class="form-group">
+                        <label>عدد الطاولات الافتراضي</label>
+                        <input type="number" id="tableCount" value="12" min="1" max="30" class="form-control" style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); font-family: 'Tajawal', sans-serif;">
+                    </div>
+                    <div class="form-group">
+                        <label>إعادة تعيين جميع الطاولات (سيتم حذف جميع الطلبات)</label>
+                        <button class="btn btn-primary" id="resetAllTablesBtn" style="width: 100%;">إعادة تعيين جميع الطاولات</button>
+                    </div>
+                </div>
+                
+                <div class="settings-content" id="imagesTab">
+                    <h3 style="margin-bottom: 20px; color: var(--primary-dark);">إدارة الصور والخلفيات</h3>
+                    <div class="form-group">
+                        <label>صورة خلفية تسجيل الدخول (URL)</label>
+                        <input type="text" id="loginBackground" class="form-control" style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); font-family: 'Tajawal', sans-serif;" placeholder="أدخل رابط الصورة">
+                    </div>
+                    <div class="form-group">
+                        <label>صورة الطاولة الافتراضية (URL)</label>
+                        <input type="text" id="tableImage" class="form-control" style="width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); font-family: 'Tajawal', sans-serif;" placeholder="أدخل رابط الصورة">
+                    </div>
+                    <div class="form-group">
+                        <label>تحديث الصور</label>
+                        <button class="btn btn-primary" id="updateImagesBtn" style="width: 100%;">تحديث الصور</button>
+                    </div>
+                </div>
+                
+                <div class="settings-actions">
+                    <button class="btn btn-primary" id="saveSettingsBtn">حفظ التغييرات</button>
+                    <button class="btn-cancel" id="resetSettingsBtn">إعادة التعيين</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة تأكيد تفريغ الطاولة -->
+    <div class="modal" id="confirmClearTableModal">
+        <div class="modal-content">
+            <div class="modal-title">تفريغ الطاولة</div>
+            <div class="modal-message">
+                هل أنت متأكد من تفريغ الطاولة؟ سيتم حذف جميع الطلبات وستصبح الطاولة فارغة.
+            </div>
+            <div class="modal-actions">
+                <button class="btn-confirm" id="confirmClearTableBtn">تأكيد التفريغ</button>
+                <button class="btn-cancel" id="cancelClearTableBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- منطقة الطباعة -->
+    <div class="print-section" id="printSection" style="display: none;">
+        <div class="print-header">
+            <h1>نظام إدارة MK - المقهى</h1>
+            <p>تقرير بتاريخ: <span id="printDate"></span></p>
+        </div>
+        <div id="printContent">
+            <!-- سيتم تعبئة محتوى الطباعة هنا بواسطة JavaScript -->
+        </div>
+    </div>
+    
+    <!-- إشعارات -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">تم الإجراء بنجاح</span>
+    </div>
+    
+    <script>
+        // بيانات النظام
+        let systemData = {
+            password: "karam9",
+            tableCount: 12,
+            logoText: "MK",
+            colors: {
+                primary: "#8B4513",
+                secondary: "#D4AF37",
+                background: "#2C1810",
+                text: "#2C1810"
+            },
+            images: {
+                loginBackground: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80",
+                tableImage: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80"
+            },
+            menu: {
+                categories: [
+                    { id: 1, name: "كل الاصناف" },
+                    { id: 2, name: "الوجبات السريعة" },
+                    { id: 3, name: "سناك" },
+                    { id: 4, name: "الحلويات" },
+                    { id: 5, name: "المشروبات" },
+                    { id: 6, name: "النراكيل" }
+                ],
+                items: [
+                    // الوجبات السريعة
+                    { id: 1, categoryId: 2, name: "بركر دجاج", price: 200 },
+                    { id: 2, categoryId: 2, name: "بركر لحم", price: 2500 },
+                    { id: 3, categoryId: 2, name: "زنكر", price: 3000 },
+                    { id: 4, categoryId: 2, name: "شاورما", price: 3500 },
+                    { id: 5, categoryId: 2, name: "صاج فاهيتا", price: 3500 },
+                    { id: 6, categoryId: 2, name: "ريزو وسط", price: 3500 },
+                    { id: 7, categoryId: 2, name: "ريزو كبير", price: 5500 },
+                    { id: 8, categoryId: 2, name: "فنكر", price: 1000 },
+                    { id: 9, categoryId: 2, name: "بيتزا صغير", price: 4000 },
+                    { id: 10, categoryId: 2, name: "بيتزا وسط", price: 5500 },
+                    { id: 11, categoryId: 2, name: "بيتزا كبير", price: 7500 },
+                    { id: 12, categoryId: 2, name: "لحم بعجين وسط", price: 1750 },
+                    { id: 13, categoryId: 2, name: "لحم بعجين كبير", price: 3000 },
+                    
+                    // سناك
+                    { id: 14, categoryId: 3, name: "مكسرات", price: 1000 },
+                    { id: 15, categoryId: 3, name: "طبق مكسرات", price: 3000 },
+                    { id: 16, categoryId: 3, name: "طبق فواكه", price: 3000 },
+                    
+                    // الحلويات
+                    { id: 17, categoryId: 4, name: "تراب الملوك", price: 1500 },
+                    { id: 18, categoryId: 4, name: "وافل", price: 3000 },
+                    { id: 19, categoryId: 4, name: "كريب", price: 3000 },
+                    
+                    // المشروبات
+                    { id: 20, categoryId: 5, name: "ماء", price: 250 },
+                    { id: 21, categoryId: 5, name: "مشروبات غازية", price: 500 },
+                    { id: 22, categoryId: 5, name: "تايكر مكسيكي", price: 1000 },
+                    { id: 23, categoryId: 5, name: "كابتشينو", price: 1000 },
+                    { id: 24, categoryId: 5, name: "قهوة جكليتية حجم صغير", price: 500 },
+                    { id: 25, categoryId: 5, name: "قهوة جكليتية حجم كبير", price: 1000 },
+                    { id: 26, categoryId: 5, name: "قهوة عربية حجم كبير", price: 1000 },
+                    { id: 27, categoryId: 5, name: "قهوة عربية حجم صغير", price: 500 },
+                    { id: 28, categoryId: 5, name: "عصير موز", price: 1000 },
+                    { id: 29, categoryId: 5, name: "عصير موز و حليب", price: 1000 },
+                    { id: 30, categoryId: 5, name: "عصير موز و فراولة", price: 1500 },
+                    { id: 31, categoryId: 5, name: "عصير برتقال", price: 1000 },
+                    { id: 32, categoryId: 5, name: "عصير برتقال و ليمون", price: 1500 },
+                    { id: 33, categoryId: 5, name: "عصير كوكتيل", price: 1500 },
+                    { id: 34, categoryId: 5, name: "شاي حجم صغير", price: 500 },
+                    { id: 35, categoryId: 5, name: "شاي حجم كبير", price: 1000 },
+                    
+                    // النراكيل
+                    { id: 36, categoryId: 6, name: "ليمون و نعناع", price: 4000 },
+                    { id: 37, categoryId: 6, name: "انكليزي", price: 4000 },
+                    { id: 38, categoryId: 6, name: "علك و نعناع", price: 4000 },
+                    { id: 39, categoryId: 6, name: "تفاحتين", price: 4000 },
+                    { id: 40, categoryId: 6, name: "MK", price: 4000 }
+                ]
+            },
+            tables: [],
+            earnings: {
+                cafe: 0,
+                totalOrders: 0
+            },
+            currentTable: null,
+            editingItem: null
+        };
+
+        // تهيئة النظام عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحميل البيانات من التخزين المحلي إن وجدت
+            loadDataFromStorage();
+            
+            // تهيئة الطاولات إذا لم تكن موجودة
+            if (!systemData.tables || systemData.tables.length === 0) {
+                initTables();
+            }
+            
+            // تهيئة العناصر
+            initLoginScreen();
+            initMainScreen();
+            initCafeSection();
+            initSettingsSection();
+            initModals();
+            
+            // تحديث الألوان حسب الإعدادات
+            updateColors();
+            
+            // تحديث خلفية تسجيل الدخول
+            updateLoginBackground();
+        });
+
+        // شاشة تسجيل الدخول
+        function initLoginScreen() {
+            const loginBtn = document.getElementById('loginBtn');
+            const passwordInput = document.getElementById('password');
+            
+            loginBtn.addEventListener('click', function() {
+                if (passwordInput.value === systemData.password) {
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('mainScreen').style.display = 'block';
+                    showSection('cafeSection');
+                    renderTables();
+                    renderMenuCategories();
+                    renderMenuItems(0);
+                    updateCafeSummary();
+                    showNotification('تم تسجيل الدخول بنجاح!', 'success');
+                } else {
+                    showNotification('كلمة المرور غير صحيحة!', 'error');
+                    passwordInput.focus();
+                }
+            });
+            
+            // السماح بالدخول باستخدام زر Enter
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loginBtn.click();
+                }
+            });
+        }
+
+        // الشاشة الرئيسية
+        function initMainScreen() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const printBtn = document.getElementById('printBtn');
+            const addTableBtn = document.getElementById('addTableBtn');
+            const quickStatsBtn = document.getElementById('quickStatsBtn');
+            const cancelSelectionBtn = document.getElementById('cancelSelectionBtn');
+            
+            settingsBtn.addEventListener('click', function() {
+                showSection('settingsSection');
+                loadSettings();
+            });
+            
+            printBtn.addEventListener('click', function() {
+                generatePrintContent();
+                printDocument();
+            });
+            
+            addTableBtn.addEventListener('click', function() {
+                addNewTable();
+            });
+            
+            quickStatsBtn.addEventListener('click', function() {
+                showQuickStats();
+            });
+            
+            cancelSelectionBtn.addEventListener('click', function() {
+                cancelTableSelection();
+            });
+            
+            logoutBtn.addEventListener('click', function() {
+                document.getElementById('mainScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('password').value = '';
+                showNotification('تم تسجيل الخروج بنجاح', 'info');
+            });
+        }
+
+        // قسم إدارة المقهى
+        function initCafeSection() {
+            // إضافة طاولة جديدة
+            document.getElementById('addTableBtn').addEventListener('click', addNewTable);
+        }
+        
+        function initTables() {
+            systemData.tables = [];
+            for (let i = 1; i <= systemData.tableCount; i++) {
+                systemData.tables.push({
+                    id: i,
+                    name: `طاولة ${i}`,
+                    occupied: false,
+                    orders: [],
+                    total: 0,
+                    image: systemData.images.tableImage
+                });
+            }
+        }
+        
+        function renderTables() {
+            const tablesContainer = document.getElementById('tablesContainer');
+            tablesContainer.innerHTML = '';
+            
+            systemData.tables.forEach(table => {
+                const tableCard = document.createElement('div');
+                tableCard.className = `table-card ${table.occupied ? 'occupied' : 'vacant'} ${systemData.currentTable === table.id ? 'selected' : ''}`;
+                tableCard.id = `table-${table.id}`;
+                
+                const statusText = table.occupied ? 'مشغولة' : 'فارغة';
+                const statusClass = table.occupied ? 'status-active' : 'status-inactive';
+                
+                // عرض الطلبات
+                let ordersHtml = '';
+                if (table.orders.length > 0) {
+                    table.orders.forEach(order => {
+                        ordersHtml += `
+                            <div class="order-item">
+                                <span class="order-name">${order.name}</span>
+                                <span class="order-price">${order.price.toLocaleString()} دينار</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    ordersHtml = '<div style="text-align: center; padding: 20px; color: var(--gray);">لا توجد طلبات</div>';
+                }
+                
+                tableCard.innerHTML = `
+                    <div class="table-header">
+                        <div class="table-id">${table.name}</div>
+                        <div class="table-status ${statusClass}">${statusText}</div>
+                    </div>
+                    <div class="table-image">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="table-orders" id="orders-${table.id}">
+                        ${ordersHtml}
+                    </div>
+                    <div class="table-total">
+                        <span>الإجمالي:</span>
+                        <span>${table.total.toLocaleString()} دينار</span>
+                    </div>
+                    <div class="table-controls">
+                        <button class="btn-table btn-add-order" id="add-order-${table.id}">
+                            <i class="fas fa-plus"></i> ${systemData.currentTable === table.id ? 'تم التحديد' : 'إضافة طلب'}
+                        </button>
+                        <button class="btn-table btn-clear-table" id="clear-table-${table.id}" ${!table.occupied ? 'disabled' : ''}>
+                            <i class="fas fa-trash"></i> تفريغ الطاولة
+                        </button>
+                    </div>
+                `;
+                
+                tablesContainer.appendChild(tableCard);
+                
+                // إضافة مستمعي الأحداث للأزرار
+                document.getElementById(`add-order-${table.id}`).addEventListener('click', function() {
+                    selectTableForOrder(table.id);
+                });
+                
+                document.getElementById(`clear-table-${table.id}`).addEventListener('click', function() {
+                    showClearTableModal(table.id);
+                });
+            });
+            
+            updateCafeSummary();
+            updateSelectionIndicator();
+        }
+        
+        function renderMenuCategories() {
+            const menuCategories = document.getElementById('menuCategories');
+            menuCategories.innerHTML = '';
+            
+            // إضافة زر "كل الأصناف"
+            const allButton = document.createElement('button');
+            allButton.className = 'category-btn active';
+            allButton.textContent = 'كل الاصناف';
+            allButton.dataset.categoryId = '0';
+            allButton.addEventListener('click', function() {
+                // إزالة النشاط من جميع الأزرار
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                // إضافة النشاط للزر الحالي
+                this.classList.add('active');
+                renderMenuItems(0);
+            });
+            menuCategories.appendChild(allButton);
+            
+            // إضافة أزرار الأقسام
+            systemData.menu.categories.forEach(category => {
+                if (category.id !== 1) { // استبعاد "كل الأصناف" لأنه زر خاص
+                    const button = document.createElement('button');
+                    button.className = 'category-btn';
+                    button.textContent = category.name;
+                    button.dataset.categoryId = category.id;
+                    button.addEventListener('click', function() {
+                        // إزالة النشاط من جميع الأزرار
+                        document.querySelectorAll('.category-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        // إضافة النشاط للزر الحالي
+                        this.classList.add('active');
+                        renderMenuItems(category.id);
+                    });
+                    menuCategories.appendChild(button);
+                }
+            });
+        }
+        
+        function renderMenuItems(categoryId) {
+            const menuItems = document.getElementById('menuItems');
+            menuItems.innerHTML = '';
+            
+            let itemsToShow = [];
+            
+            if (categoryId === 0) {
+                // عرض جميع الأصناف
+                itemsToShow = systemData.menu.items;
+            } else {
+                // عرض أصناف القسم المحدد
+                itemsToShow = systemData.menu.items.filter(item => item.categoryId === categoryId);
+            }
+            
+            itemsToShow.forEach(item => {
+                const category = systemData.menu.categories.find(cat => cat.id === item.categoryId);
+                const itemElement = document.createElement('div');
+                itemElement.className = 'menu-item';
+                itemElement.dataset.itemId = item.id;
+                itemElement.innerHTML = `
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-price">${item.price.toLocaleString()} دينار</div>
+                    <div style="font-size: 12px; color: var(--gray); margin-top: 5px;">${category ? category.name : ''}</div>
+                `;
+                
+                itemElement.addEventListener('click', function() {
+                    if (systemData.currentTable !== null) {
+                        addOrderToTable(systemData.currentTable, item);
+                    } else {
+                        showNotification('الرجاء تحديد طاولة أولاً', 'warning');
+                    }
+                });
+                
+                menuItems.appendChild(itemElement);
+            });
+        }
+        
+        function selectTableForOrder(tableId) {
+            // إذا كانت نفس الطاولة محددة بالفعل، قم بإلغاء التحديد
+            if (systemData.currentTable === tableId) {
+                cancelTableSelection();
+                return;
+            }
+            
+            systemData.currentTable = tableId;
+            renderTables();
+            updateSelectionIndicator();
+            showNotification(`تم تحديد ${getTableName(tableId)}. الآن اختر صنفًا من القائمة`, 'info');
+        }
+        
+        function cancelTableSelection() {
+            systemData.currentTable = null;
+            renderTables();
+            updateSelectionIndicator();
+            showNotification('تم إلغاء تحديد الطاولة', 'info');
+        }
+        
+        function getTableName(tableId) {
+            const table = systemData.tables.find(t => t.id === tableId);
+            return table ? table.name : 'طاولة غير معروفة';
+        }
+        
+        function updateSelectionIndicator() {
+            const indicator = document.getElementById('selectedTableIndicator');
+            const cancelBtn = document.getElementById('cancelSelectionBtn');
+            
+            if (systemData.currentTable !== null) {
+                document.getElementById('selectedTableName').textContent = getTableName(systemData.currentTable);
+                indicator.classList.add('show');
+                cancelBtn.style.display = 'flex';
+            } else {
+                indicator.classList.remove('show');
+                cancelBtn.style.display = 'none';
+            }
+        }
+        
+        function addOrderToTable(tableId, item) {
+            const table = systemData.tables.find(t => t.id === tableId);
+            if (table) {
+                table.orders.push({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price
+                });
+                
+                table.total += item.price;
+                table.occupied = true;
+                
+                // تحديث الإحصائيات
+                systemData.earnings.cafe += item.price;
+                systemData.earnings.totalOrders++;
+                
+                renderTables();
+                showNotification(`تم إضافة ${item.name} إلى ${table.name}`, 'success');
+                saveDataToStorage();
+            }
+        }
+        
+        function clearTable(tableId) {
+            const table = systemData.tables.find(t => t.id === tableId);
+            if (table) {
+                table.orders = [];
+                table.total = 0;
+                table.occupied = false;
+                
+                renderTables();
+                showNotification(`تم تفريغ ${table.name}`, 'success');
+                saveDataToStorage();
+            }
+        }
+        
+        function addNewTable() {
+            const newId = systemData.tables.length + 1;
+            systemData.tables.push({
+                id: newId,
+                name: `طاولة ${newId}`,
+                occupied: false,
+                orders: [],
+                total: 0,
+                image: systemData.images.tableImage
+            });
+            
+            systemData.tableCount = systemData.tables.length;
+            renderTables();
+            showNotification(`تم إضافة طاولة جديدة برقم ${newId}`, 'success');
+            saveDataToStorage();
+        }
+        
+        function updateCafeSummary() {
+            const occupiedTables = systemData.tables.filter(t => t.occupied).length;
+            const vacantTables = systemData.tables.length - occupiedTables;
+            
+            document.getElementById('occupiedTables').textContent = occupiedTables;
+            document.getElementById('vacantTables').textContent = vacantTables;
+            document.getElementById('totalEarnings').textContent = systemData.earnings.cafe.toLocaleString();
+            document.getElementById('totalOrders').textContent = systemData.earnings.totalOrders;
+        }
+        
+        function showQuickStats() {
+            const occupiedTables = systemData.tables.filter(t => t.occupied).length;
+            const totalOrdersToday = systemData.earnings.totalOrders;
+            const totalEarningsToday = systemData.earnings.cafe;
+            
+            alert(`إحصائيات سريعة:
+            - عدد الطاولات المشغولة: ${occupiedTables}
+            - إجمالي الطلبات اليوم: ${totalOrdersToday}
+            - إجمالي الإيرادات اليوم: ${totalEarningsToday.toLocaleString()} دينار
+            - عدد الطاولات الإجمالي: ${systemData.tables.length}`);
+        }
+
+        // قسم الإعدادات
+        function initSettingsSection() {
+            const backFromSettings = document.getElementById('backFromSettings');
+            
+            backFromSettings.addEventListener('click', function() {
+                showSection('cafeSection');
+            });
+            
+            // إضافة مستمعي الأحداث لألسنة الإعدادات
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    // إزالة النشاط من جميع الألسنة
+                    document.querySelectorAll('.settings-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    // إضافة النشاط للسان الحالي
+                    this.classList.add('active');
+                    
+                    // إخفاء جميع محتويات الإعدادات
+                    document.querySelectorAll('.settings-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // عرض محتوى السان الحالي
+                    document.getElementById(`${tabId}Tab`).classList.add('active');
+                    
+                    // إذا كان قسم القائمة، قم بتحديث الخيارات
+                    if (tabId === 'menu') {
+                        updateCategorySelect();
+                    }
+                });
+            });
+            
+            // إعدادات المظهر
+            document.getElementById('primaryColor').addEventListener('change', function() {
+                systemData.colors.primary = this.value;
+                updateColors();
+            });
+            
+            document.getElementById('secondaryColor').addEventListener('change', function() {
+                systemData.colors.secondary = this.value;
+                updateColors();
+            });
+            
+            document.getElementById('backgroundColor').addEventListener('change', function() {
+                systemData.colors.background = this.value;
+                updateColors();
+            });
+            
+            document.getElementById('textColor').addEventListener('change', function() {
+                systemData.colors.text = this.value;
+                updateColors();
+            });
+            
+            document.getElementById('logoText').addEventListener('change', function() {
+                systemData.logoText = this.value;
+                document.querySelector('.header-logo').textContent = this.value;
+                document.querySelector('.mk-logo').textContent = this.value;
+            });
+            
+            // إعدادات الطاولات
+            document.getElementById('tableCount').addEventListener('change', function() {
+                const tableCount = parseInt(this.value);
+                if (tableCount > 0) {
+                    systemData.tableCount = tableCount;
+                    
+                    // إذا كان عدد الطاولات أكبر من العدد الحالي، أضف طاولات جديدة
+                    if (tableCount > systemData.tables.length) {
+                        const currentCount = systemData.tables.length;
+                        for (let i = currentCount + 1; i <= tableCount; i++) {
+                            systemData.tables.push({
+                                id: i,
+                                name: `طاولة ${i}`,
+                                occupied: false,
+                                orders: [],
+                                total: 0,
+                                image: systemData.images.tableImage
+                            });
+                        }
+                    } 
+                    // إذا كان عدد الطاولات أقل من العدد الحالي، احذف الطاولات الزائدة
+                    else if (tableCount < systemData.tables.length) {
+                        systemData.tables = systemData.tables.slice(0, tableCount);
+                    }
+                    
+                    renderTables();
+                    showNotification('تم تحديث عدد الطاولات بنجاح', 'success');
+                }
+            });
+            
+            document.getElementById('resetAllTablesBtn').addEventListener('click', function() {
+                if (confirm('هل أنت متأكد من إعادة تعيين جميع الطاولات؟ سيتم حذف جميع الطلبات والإيرادات.')) {
+                    systemData.tables.forEach(table => {
+                        table.orders = [];
+                        table.total = 0;
+                        table.occupied = false;
+                    });
+                    
+                    systemData.earnings.cafe = 0;
+                    systemData.earnings.totalOrders = 0;
+                    
+                    renderTables();
+                    showNotification('تم إعادة تعيين جميع الطاولات بنجاح', 'success');
+                    saveDataToStorage();
+                }
+            });
+            
+            // إعدادات الصور
+            document.getElementById('updateImagesBtn').addEventListener('click', function() {
+                const loginBg = document.getElementById('loginBackground').value;
+                const tableImg = document.getElementById('tableImage').value;
+                
+                if (loginBg) {
+                    systemData.images.loginBackground = loginBg;
+                    updateLoginBackground();
+                }
+                
+                if (tableImg) {
+                    systemData.images.tableImage = tableImg;
+                    // تحديث صور الطاولات
+                    systemData.tables.forEach(table => {
+                        table.image = tableImg;
+                    });
+                }
+                
+                showNotification('تم تحديث الصور بنجاح', 'success');
+                saveDataToStorage();
+            });
+            
+            // إدارة القائمة
+            document.getElementById('addCategoryBtn').addEventListener('click', function() {
+                const categoryName = prompt('أدخل اسم القسم الجديد:');
+                if (categoryName && categoryName.trim() !== '') {
+                    const newId = systemData.menu.categories.length + 1;
+                    systemData.menu.categories.push({
+                        id: newId,
+                        name: categoryName
+                    });
+                    
+                    updateCategorySelect();
+                    renderMenuCategories();
+                    showNotification(`تم إضافة قسم ${categoryName} بنجاح`, 'success');
+                    saveDataToStorage();
+                }
+            });
+            
+            document.getElementById('addItemBtn').addEventListener('click', function() {
+                systemData.editingItem = null;
+                document.getElementById('itemName').value = '';
+                document.getElementById('itemPrice').value = '';
+                document.getElementById('saveItemBtn').textContent = 'إضافة الصنف';
+                showNotification('الرجاء ملء بيانات الصنف الجديد', 'info');
+            });
+            
+            document.getElementById('editItemBtn').addEventListener('click', function() {
+                const itemName = prompt('أدخل اسم الصنف الذي تريد تعديله:');
+                if (itemName) {
+                    const item = systemData.menu.items.find(item => item.name === itemName);
+                    if (item) {
+                        systemData.editingItem = item;
+                        document.getElementById('itemName').value = item.name;
+                        document.getElementById('itemPrice').value = item.price;
+                        document.getElementById('categorySelect').value = item.categoryId;
+                        document.getElementById('saveItemBtn').textContent = 'تحديث الصنف';
+                        showNotification(`تم تحميل بيانات ${item.name} للتعديل`, 'info');
+                    } else {
+                        showNotification('لم يتم العثور على الصنف المطلوب', 'error');
+                    }
+                }
+            });
+            
+            document.getElementById('deleteItemBtn').addEventListener('click', function() {
+                const itemName = prompt('أدخل اسم الصنف الذي تريد حذفه:');
+                if (itemName) {
+                    const index = systemData.menu.items.findIndex(item => item.name === itemName);
+                    if (index !== -1) {
+                        if (confirm(`هل أنت متأكد من حذف ${itemName}؟`)) {
+                            systemData.menu.items.splice(index, 1);
+                            renderMenuCategories();
+                            renderMenuItems(0);
+                            showNotification(`تم حذف ${itemName} بنجاح`, 'success');
+                            saveDataToStorage();
+                        }
+                    } else {
+                        showNotification('لم يتم العثور على الصنف المطلوب', 'error');
+                    }
+                }
+            });
+            
+            document.getElementById('saveItemBtn').addEventListener('click', function() {
+                const itemName = document.getElementById('itemName').value;
+                const itemPrice = parseInt(document.getElementById('itemPrice').value);
+                const categoryId = parseInt(document.getElementById('categorySelect').value);
+                
+                if (itemName && itemPrice && categoryId) {
+                    if (systemData.editingItem) {
+                        // تحديث الصنف الحالي
+                        systemData.editingItem.name = itemName;
+                        systemData.editingItem.price = itemPrice;
+                        systemData.editingItem.categoryId = categoryId;
+                        showNotification(`تم تحديث ${itemName} بنجاح`, 'success');
+                    } else {
+                        // إضافة صنف جديد
+                        const newId = systemData.menu.items.length + 1;
+                        systemData.menu.items.push({
+                            id: newId,
+                            categoryId: categoryId,
+                            name: itemName,
+                            price: itemPrice
+                        });
+                        showNotification(`تم إضافة ${itemName} بنجاح`, 'success');
+                    }
+                    
+                    // إعادة تعيين الحقول
+                    document.getElementById('itemName').value = '';
+                    document.getElementById('itemPrice').value = '';
+                    systemData.editingItem = null;
+                    document.getElementById('saveItemBtn').textContent = 'إضافة الصنف';
+                    
+                    renderMenuCategories();
+                    renderMenuItems(0);
+                    saveDataToStorage();
+                } else {
+                    showNotification('الرجاء ملء جميع الحقول', 'error');
+                }
+            });
+            
+            // حفظ الإعدادات
+            document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+                saveDataToStorage();
+                showNotification('تم حفظ الإعدادات بنجاح', 'success');
+            });
+            
+            // إعادة تعيين الإعدادات
+            document.getElementById('resetSettingsBtn').addEventListener('click', function() {
+                if (confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات إلى القيم الافتراضية؟')) {
+                    resetSettings();
+                    showNotification('تم إعادة تعيين الإعدادات بنجاح', 'success');
+                }
+            });
+        }
+        
+        function updateCategorySelect() {
+            const categorySelect = document.getElementById('categorySelect');
+            categorySelect.innerHTML = '';
+            
+            systemData.menu.categories.forEach(category => {
+                if (category.id !== 1) { // استبعاد "كل الأصناف"
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                }
+            });
+        }
+        
+        function loadSettings() {
+            // تحميل إعدادات المظهر
+            document.getElementById('primaryColor').value = systemData.colors.primary;
+            document.getElementById('secondaryColor').value = systemData.colors.secondary;
+            document.getElementById('backgroundColor').value = systemData.colors.background;
+            document.getElementById('textColor').value = systemData.colors.text;
+            document.getElementById('logoText').value = systemData.logoText;
+            
+            // تحميل إعدادات الطاولات
+            document.getElementById('tableCount').value = systemData.tableCount;
+            
+            // تحميل إعدادات الصور
+            document.getElementById('loginBackground').value = systemData.images.loginBackground;
+            document.getElementById('tableImage').value = systemData.images.tableImage;
+            
+            // تحديث خيارات الأقسام
+            updateCategorySelect();
+        }
+        
+        function updateColors() {
+            const root = document.documentElement;
+            root.style.setProperty('--primary', systemData.colors.primary);
+            root.style.setProperty('--primary-dark', darkenColor(systemData.colors.primary, 20));
+            root.style.setProperty('--secondary', systemData.colors.secondary);
+            root.style.setProperty('--secondary-dark', darkenColor(systemData.colors.secondary, 20));
+            root.style.setProperty('--dark', systemData.colors.background);
+            root.style.setProperty('--light', lightenColor(systemData.colors.background, 80));
+        }
+        
+        function updateLoginBackground() {
+            const loginScreen = document.getElementById('loginScreen');
+            if (loginScreen && systemData.images.loginBackground) {
+                loginScreen.style.backgroundImage = `linear-gradient(rgba(44, 24, 16, 0.85), rgba(44, 24, 16, 0.9)), url('${systemData.images.loginBackground}')`;
+            }
+        }
+        
+        function darkenColor(color, percent) {
+            // دالة لتظليل اللون
+            let r = parseInt(color.substring(1, 3), 16);
+            let g = parseInt(color.substring(3, 5), 16);
+            let b = parseInt(color.substring(5, 7), 16);
+            
+            r = Math.floor(r * (100 - percent) / 100);
+            g = Math.floor(g * (100 - percent) / 100);
+            b = Math.floor(b * (100 - percent) / 100);
+            
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+        
+        function lightenColor(color, percent) {
+            // دالة لتفتيح اللون
+            let r = parseInt(color.substring(1, 3), 16);
+            let g = parseInt(color.substring(3, 5), 16);
+            let b = parseInt(color.substring(5, 7), 16);
+            
+            r = Math.floor(r + (255 - r) * percent / 100);
+            g = Math.floor(g + (255 - g) * percent / 100);
+            b = Math.floor(b + (255 - b) * percent / 100);
+            
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+        
+        function resetSettings() {
+            // إعادة تعيين الإعدادات إلى القيم الافتراضية
+            systemData.tableCount = 12;
+            systemData.logoText = "MK";
+            systemData.colors = {
+                primary: "#8B4513",
+                secondary: "#D4AF37",
+                background: "#2C1810",
+                text: "#2C1810"
+            };
+            
+            systemData.images = {
+                loginBackground: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80",
+                tableImage: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80"
+            };
+            
+            // تحديث الواجهة
+            loadSettings();
+            updateColors();
+            updateLoginBackground();
+            
+            // إعادة تعيين الطاولات
+            initTables();
+            renderTables();
+            
+            // إعادة تعيين الإيرادات
+            systemData.earnings = {
+                cafe: 0,
+                totalOrders: 0
+            };
+            
+            // تحديث الشعار
+            document.querySelector('.header-logo').textContent = systemData.logoText;
+            document.querySelector('.mk-logo').textContent = systemData.logoText;
+            
+            // تحديث القائمة
+            renderMenuCategories();
+            renderMenuItems(0);
+        }
+
+        // النوافذ المنبثقة
+        function initModals() {
+            // نافذة تأكيد تفريغ الطاولة
+            const confirmClearTableModal = document.getElementById('confirmClearTableModal');
+            const confirmClearTableBtn = document.getElementById('confirmClearTableBtn');
+            const cancelClearTableBtn = document.getElementById('cancelClearTableBtn');
+            
+            cancelClearTableBtn.addEventListener('click', function() {
+                confirmClearTableModal.style.display = 'none';
+                systemData.currentTable = null;
+            });
+            
+            // إغلاق النوافذ عند النقر خارجها
+            window.addEventListener('click', function(event) {
+                if (event.target === confirmClearTableModal) {
+                    confirmClearTableModal.style.display = 'none';
+                    systemData.currentTable = null;
+                }
+            });
+        }
+        
+        function showClearTableModal(tableId) {
+            const table = systemData.tables.find(t => t.id === tableId);
+            if (table) {
+                systemData.currentTable = tableId;
+                
+                const modal = document.getElementById('confirmClearTableModal');
+                modal.style.display = 'flex';
+                
+                // إضافة مستمع الحدث لتأكيد التفريغ
+                document.getElementById('confirmClearTableBtn').onclick = function() {
+                    clearTable(tableId);
+                    modal.style.display = 'none';
+                    systemData.currentTable = null;
+                };
+            }
+        }
+
+        // وظائف مساعدة
+        function showSection(sectionId) {
+            // إخفاء جميع الأقسام
+            document.getElementById('cafeSection').style.display = 'none';
+            document.getElementById('settingsSection').style.display = 'none';
+            
+            // عرض القسم المطلوب
+            document.getElementById(sectionId).style.display = 'block';
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        function saveDataToStorage() {
+            try {
+                localStorage.setItem('mkCafeSystemData', JSON.stringify(systemData));
+            } catch (e) {
+                console.error('Error saving data to localStorage:', e);
+            }
+        }
+        
+        function loadDataFromStorage() {
+            try {
+                const savedData = localStorage.getItem('mkCafeSystemData');
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    
+                    // دمج البيانات المحفوظة مع البيانات الافتراضية
+                    if (parsedData.tableCount) systemData.tableCount = parsedData.tableCount;
+                    if (parsedData.logoText) systemData.logoText = parsedData.logoText;
+                    if (parsedData.colors) systemData.colors = parsedData.colors;
+                    if (parsedData.images) systemData.images = parsedData.images;
+                    if (parsedData.menu) systemData.menu = parsedData.menu;
+                    if (parsedData.tables) systemData.tables = parsedData.tables;
+                    if (parsedData.earnings) systemData.earnings = parsedData.earnings;
+                    
+                    // تحديث الواجهات
+                    if (document.getElementById('cafeSection').style.display !== 'none') {
+                        renderTables();
+                    }
+                    
+                    updateColors();
+                }
+            } catch (e) {
+                console.error('Error loading data from localStorage:', e);
+            }
+        }
+        
+        function generatePrintContent() {
+            const printContent = document.getElementById('printContent');
+            const printDate = document.getElementById('printDate');
+            
+            // تحديث التاريخ
+            const now = new Date();
+            printDate.textContent = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG');
+            
+            let content = `
+                <h2>تقرير إدارة MK - المقهى</h2>
+                <hr>
+                <h3>إحصائيات المقهى</h3>
+                <p>عدد الطاولات: ${systemData.tables.length}</p>
+                <p>الطاولات المشغولة: ${systemData.tables.filter(t => t.occupied).length}</p>
+                <p>إجمالي الإيرادات: ${systemData.earnings.cafe.toLocaleString()} دينار</p>
+                <p>إجمالي الطلبات: ${systemData.earnings.totalOrders}</p>
+                
+                <h3>الطاولات المشغولة</h3>
+            `;
+            
+            systemData.tables.forEach(table => {
+                if (table.occupied && table.orders.length > 0) {
+                    content += `
+                        <div style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+                            <h4>${table.name} - الإجمالي: ${table.total.toLocaleString()} دينار</h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                    `;
+                    
+                    table.orders.forEach(order => {
+                        content += `
+                            <tr>
+                                <td style="border-bottom: 1px dashed #ddd; padding: 5px;">${order.name}</td>
+                                <td style="border-bottom: 1px dashed #ddd; padding: 5px; text-align: left;">${order.price.toLocaleString()} دينار</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    content += `</table></div>`;
+                }
+            });
+            
+            // إضافة قائمة الأسعار
+            content += `
+                <h3>قائمة الأسعار</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            `;
+            
+            systemData.menu.categories.forEach(category => {
+                if (category.id !== 1) { // استبعاد "كل الأصناف"
+                    content += `
+                        <tr>
+                            <td colspan="2" style="background-color: #f0f0f0; padding: 10px; font-weight: bold; text-align: center;">${category.name}</td>
+                        </tr>
+                    `;
+                    
+                    const categoryItems = systemData.menu.items.filter(item => item.categoryId === category.id);
+                    categoryItems.forEach(item => {
+                        content += `
+                            <tr>
+                                <td style="border-bottom: 1px solid #ddd; padding: 8px;">${item.name}</td>
+                                <td style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">${item.price.toLocaleString()} دينار</td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+            
+            content += `</table>`;
+            
+            printContent.innerHTML = content;
+        }
+        
+        function printDocument() {
+            const printSection = document.getElementById('printSection');
+            printSection.style.display = 'block';
+            
+            window.print();
+            
+            setTimeout(function() {
+                printSection.style.display = 'none';
+            }, 100);
+        }
+    </script>
+</body>
+</html>
